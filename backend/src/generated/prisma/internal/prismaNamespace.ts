@@ -952,6 +952,9 @@ export type CriterionScalarFieldEnum = (typeof CriterionScalarFieldEnum)[keyof t
 export const ReviewScalarFieldEnum = {
   id: 'id',
   feedback: 'feedback',
+  strengths: 'strengths',
+  improvements: 'improvements',
+  resources: 'resources',
   reviewerId: 'reviewerId',
   submissionId: 'submissionId',
   createdAt: 'createdAt'
