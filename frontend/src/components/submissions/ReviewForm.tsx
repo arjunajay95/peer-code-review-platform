@@ -92,6 +92,39 @@ export default function ReviewForm({ submissionId, criteria, onSubmitted }: Revi
         {errors.feedback && <p className="mt-1 text-xs text-red-500">{errors.feedback.message}</p>}
       </div>
 
+      <div>
+        <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Strengths</label>
+        <textarea
+          {...register("strengths")}
+          rows={3}
+          className="mt-1 block w-full border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          placeholder="What did this submission do well? (min. 5 characters)"
+        />
+        {errors.strengths && <p className="mt-1 text-xs text-red-500">{errors.strengths.message}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Improvements</label>
+        <textarea
+          {...register("improvements")}
+          rows={3}
+          className="mt-1 block w-full border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          placeholder="What could be improved? (min. 5 characters)"
+        />
+        {errors.improvements && <p className="mt-1 text-xs text-red-500">{errors.improvements.message}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Resources (optional)</label>
+        <textarea
+          {...register("resources")}
+          rows={2}
+          className="mt-1 block w-full border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          placeholder="Links or references that might help (max. 500 characters)"
+        />
+        {errors.resources && <p className="mt-1 text-xs text-red-500">{errors.resources.message}</p>}
+      </div>
+
       {apiError && (
         <p className=" bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-950 dark:text-red-400">{apiError}</p>
       )}
