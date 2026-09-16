@@ -3,7 +3,7 @@ services:
   # external and unmanaged by Render (D-26). Frontend is deployed
   # separately on Vercel.
   - type: web
-    name: codecritic-api
+    name: peer-code-review-platform
     runtime: node
     rootDir: backend
     plan: free
