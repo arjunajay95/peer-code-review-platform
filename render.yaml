@@ -1,0 +1,43 @@
+services:
+  # Backend API. Neon is the database — no database block here, it's
+  # external and unmanaged by Render (D-26).
+  - type: web
+    name: codecritic-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    region: oregon
+    autoDeploy: false # deploys only via the GitHub Actions deploy hook, after CI is green (D-25)
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false # Neon pooled connection string, set in the Render dashboard
+      - key: NODE_ENV
+        value: production
+      - key: ALLOWED_ORIGINS
+        sync: false # the deployed frontend origin, set in the Render dashboard
+      - key: CLERK_SECRET_KEY
+        sync: false # test-mode until Phase 8 hardening
+      - key: CLERK_PUBLISHABLE_KEY
+        sync: false # test-mode until Phase 8 hardening
+
+  # Frontend. Vercel is the named fallback if Render build minutes run
+  # tight (D-26).
+  - type: web
+    name: codecritic-frontend
+    runtime: node
+    rootDir: frontend
+    plan: free
+    region: oregon
+    autoDeploy: false # deploys only via the GitHub Actions deploy hook, after CI is green (D-25)
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+        sync: false # test-mode until Phase 8 hardening
+      - key: CLERK_SECRET_KEY
+        sync: false # test-mode until Phase 8 hardening
+      - key: NEXT_PUBLIC_API_URL
+        sync: false # the deployed backend origin, set in the Render dashboard

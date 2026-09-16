@@ -1,0 +1,120 @@
+name: CI
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+    branches: [main, development]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: codecritic_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/codecritic_test
+      DATABASE_URL_TEST: postgresql://postgres:postgres@localhost:5432/codecritic_test
+      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+      CLERK_PUBLISHABLE_KEY: pk_test_a2V5LW9jdG9wdXMtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA
+      TEST_AUTHOR_CLERK_ID: user_3I5sfapwrxtnFSGZxlCaXTVW4bL
+      TEST_REVIEWER_CLERK_ID: user_3I5sqvJPO8TCUTA8tDcS2zIWJoJ
+      RATE_LIMIT_WRITE_TEST: "20"
+      ALLOWED_ORIGINS: http://localhost:3000
+      PORT: "4000"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npx prisma migrate deploy
+      - run: npm run lint
+      - run: npm run build
+      - run: npm test
+
+  integration:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: codecritic_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/codecritic_test
+      DATABASE_URL_TEST: postgresql://postgres:postgres@localhost:5432/codecritic_test
+      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+      CLERK_PUBLISHABLE_KEY: pk_test_a2V5LW9jdG9wdXMtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA
+      TEST_AUTHOR_CLERK_ID: user_3I5sfapwrxtnFSGZxlCaXTVW4bL
+      TEST_REVIEWER_CLERK_ID: user_3I5sqvJPO8TCUTA8tDcS2zIWJoJ
+      RATE_LIMIT_WRITE_TEST: "20"
+      ALLOWED_ORIGINS: http://localhost:3000
+      PORT: "4000"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npx prisma migrate deploy
+      - run: npm run test:integration
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
+  deploy:
+    needs: [backend, integration, frontend]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fire Render deploy hook (API)
+        run: curl -fsS -X POST "${{ secrets.RENDER_DEPLOY_HOOK_API }}"
+      - name: Fire Render deploy hook (frontend)
+        run: curl -fsS -X POST "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}"

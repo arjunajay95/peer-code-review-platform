@@ -1,0 +1,165 @@
+{
+  "info": {
+    "name": "CodeCritic API",
+    "_postman_id": "codecritic-api-collection-v1",
+    "description": "CodeCritic API collection. All authenticated requests use the collection-level {{bearerToken}} variable (D-27).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{bearerToken}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://codecritic-api-e5n6.onrender.com", "description": "Override with http://localhost:4000 for local dev." },
+    { "key": "bearerToken", "value": "", "description": "Clerk test-mode session token." }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /api/health",
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{baseUrl}}/api/health", "host": ["{{baseUrl}}"], "path": ["api", "health"] } },
+          "response": [{ "name": "200 OK", "status": "OK", "code": 200, "body": "{\"success\":true,\"data\":{\"status\":\"ok\"}}" }]
+        }
+      ]
+    },
+    {
+      "name": "Technologies",
+      "item": [
+        {
+          "name": "GET /api/technologies",
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{baseUrl}}/api/technologies", "host": ["{{baseUrl}}"], "path": ["api", "technologies"] } },
+          "response": [{ "name": "200 OK", "status": "OK", "code": 200, "body": "{\"success\":true,\"data\":[{\"id\":1,\"name\":\"javascript\"},{\"id\":2,\"name\":\"typescript\"}]}" }]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "GET /api/users/me",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/users/me", "host": ["{{baseUrl}}"], "path": ["api", "users", "me"] } },
+          "response": [{ "name": "200 OK", "status": "OK", "code": 200, "body": "{\"success\":true,\"data\":{\"id\":1,\"username\":\"alice\",\"bio\":null,\"githubUrl\":null,\"karma\":0,\"createdAt\":\"2026-08-14T00:00:00.000Z\",\"technologies\":[]}}" },
+            { "name": "401 Unauthorized", "status": "Unauthorized", "code": 401, "body": "{\"success\":false,\"error\":{\"code\":\"UNAUTHORIZED\",\"message\":\"Authentication required\"}}" }]
+        },
+        {
+          "name": "PATCH /api/users/me",
+          "request": {
+            "method": "PATCH",
+            "url": { "raw": "{{baseUrl}}/api/users/me", "host": ["{{baseUrl}}"], "path": ["api", "users", "me"] },
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"bio\": \"Full-stack developer\",\n  \"githubUrl\": \"https://github.com/alice\",\n  \"technologyIds\": [1, 2]\n}" }
+          },
+          "response": [
+            { "name": "200 OK", "status": "OK", "code": 200, "body": "{\"success\":true,\"data\":{\"id\":1,\"username\":\"alice\",\"bio\":\"Full-stack developer\",\"githubUrl\":\"https://github.com/alice\",\"karma\":0,\"createdAt\":\"2026-08-14T00:00:00.000Z\",\"technologies\":[{\"id\":1,\"name\":\"javascript\"}]}}" },
+            { "name": "400 Unknown key", "status": "Bad Request", "code": 400, "body": "{\"success\":false,\"error\":{\"code\":\"VALIDATION_ERROR\",\"message\":\"Unrecognized key(s) in object: 'clerkId'\"}}" }
+          ]
+        },
+        {
+          "name": "GET /api/users/:username",
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{baseUrl}}/api/users/alice", "host": ["{{baseUrl}}"], "path": ["api", "users", "alice"] } },
+          "response": [
+            { "name": "200 OK", "status": "OK", "code": 200, "body": "{\"success\":true,\"data\":{\"id\":1,\"username\":\"alice\",\"bio\":null,\"githubUrl\":null,\"karma\":0,\"createdAt\":\"2026-08-14T00:00:00.000Z\",\"technologies\":[]}}" },
+            { "name": "404 Not Found", "status": "Not Found", "code": 404, "body": "{\"success\":false,\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"User not found\"}}" }
+          ]
+        },
+        {
+          "name": "GET /api/users/me/submissions",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/users/me/submissions?page=1&limit=20", "host": ["{{baseUrl}}"], "path": ["api", "users", "me", "submissions"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }] } },
+          "response": [{ "name": "200 OK", "status": "OK", "code": 200, "body": "{\"success\":true,\"data\":[],\"meta\":{\"page\":1,\"limit\":20,\"total\":0,\"totalPages\":0}}" }]
+        },
+        {
+          "name": "GET /api/users/me/reviews",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/users/me/reviews?page=1&limit=20", "host": ["{{baseUrl}}"], "path": ["api", "users", "me", "reviews"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }] } },
+          "response": [{ "name": "200 OK", "status": "OK", "code": 200, "body": "{\"success\":true,\"data\":[],\"meta\":{\"page\":1,\"limit\":20,\"total\":0,\"totalPages\":0}}" }]
+        },
+        {
+          "name": "GET /api/users/me/reviews-received",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/users/me/reviews-received?page=1&limit=20", "host": ["{{baseUrl}}"], "path": ["api", "users", "me", "reviews-received"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }] } },
+          "response": [{ "name": "200 OK", "status": "OK", "code": 200, "body": "{\"success\":true,\"data\":[],\"meta\":{\"page\":1,\"limit\":20,\"total\":0,\"totalPages\":0}}" }]
+        }
+      ]
+    },
+    {
+      "name": "Submissions",
+      "item": [
+        {
+          "name": "POST /api/submissions",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/submissions", "host": ["{{baseUrl}}"], "path": ["api", "submissions"] },
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"title\": \"React Dashboard for Analytics\",\n  \"description\": \"A dashboard for visualizing product analytics, built with React and Recharts.\",\n  \"githubUrl\": \"https://github.com/someuser/react-analytics-dashboard\",\n  \"technologies\": [\"react\", \"typescript\"],\n  \"criteria\": [\n    { \"label\": \"Code Quality\" },\n    { \"label\": \"Documentation\" }\n  ]\n}" }
+          },
+          "response": [
+            { "name": "201 Created", "status": "Created", "code": 201, "body": "{\"success\":true,\"data\":{\"id\":16,\"title\":\"React Dashboard for Analytics\",\"description\":\"A dashboard for visualizing product analytics, built with React and Recharts.\",\"githubUrl\":\"https://github.com/someuser/react-analytics-dashboard\",\"authorId\":7,\"createdAt\":\"2026-08-15T09:24:13.562Z\",\"technologies\":[{\"id\":1,\"name\":\"react\"},{\"id\":3,\"name\":\"typescript\"}],\"criteria\":[{\"id\":41,\"label\":\"Code Quality\"},{\"id\":42,\"label\":\"Documentation\"}]}}" },
+            { "name": "401 Unauthorized", "status": "Unauthorized", "code": 401, "body": "{\"success\":false,\"error\":{\"code\":\"UNAUTHORIZED\",\"message\":\"Authentication required\"}}" },
+            { "name": "400 Validation Error", "status": "Bad Request", "code": 400, "body": "{\"success\":false,\"error\":{\"code\":\"VALIDATION_ERROR\",\"message\":\"Title is required\"}}" }
+          ]
+        },
+        {
+          "name": "GET /api/submissions/:id",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/submissions/1", "host": ["{{baseUrl}}"], "path": ["api", "submissions", "1"] }
+          },
+          "response": [
+            { "name": "200 OK", "status": "OK", "code": 200, "body": "{\"success\":true,\"data\":{\"id\":1,\"title\":\"React Dashboard for Analytics\",\"description\":\"A dashboard for visualizing product analytics, built with React and Recharts.\",\"githubUrl\":\"https://github.com/seed/react-analytics-dashboard\",\"authorId\":1,\"createdAt\":\"2026-08-13T17:29:00.331Z\",\"author\":{\"id\":1,\"username\":\"alice_frontend\"},\"technologies\":[{\"id\":1,\"name\":\"react\"}],\"criteria\":[{\"id\":1,\"label\":\"Code Quality\"}],\"reviews\":[],\"status\":\"PENDING\"}}" },
+            { "name": "404 Not Found", "status": "Not Found", "code": 404, "body": "{\"success\":false,\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"Submission not found\"}}" }
+          ]
+        },
+        {
+          "name": "PUT /api/submissions/:id",
+          "request": {
+            "method": "PUT",
+            "url": { "raw": "{{baseUrl}}/api/submissions/16", "host": ["{{baseUrl}}"], "path": ["api", "submissions", "16"] },
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"title\": \"React Dashboard for Analytics (updated)\",\n  \"description\": \"Updated description after initial feedback from reviewers.\",\n  \"githubUrl\": \"https://github.com/someuser/react-analytics-dashboard\",\n  \"technologies\": [\"vue\"]\n}" }
+          },
+          "response": [
+            { "name": "200 OK", "status": "OK", "code": 200, "body": "{\"success\":true,\"data\":{\"id\":16,\"title\":\"React Dashboard for Analytics (updated)\",\"description\":\"Updated description after initial feedback from reviewers.\",\"githubUrl\":\"https://github.com/someuser/react-analytics-dashboard\",\"authorId\":7,\"createdAt\":\"2026-08-15T09:24:13.562Z\",\"technologies\":[{\"id\":13,\"name\":\"vue\"}],\"criteria\":[{\"id\":41,\"label\":\"Code Quality\"},{\"id\":42,\"label\":\"Documentation\"}]}}" },
+            { "name": "403 Forbidden (not the owner)", "status": "Forbidden", "code": 403, "body": "{\"success\":false,\"error\":{\"code\":\"FORBIDDEN\",\"message\":\"You can only edit your own submissions\"}}" },
+            { "name": "400 Criteria not editable", "status": "Bad Request", "code": 400, "body": "{\"success\":false,\"error\":{\"code\":\"VALIDATION_ERROR\",\"message\":\"Unrecognized key: \\\"criteria\\\"\"}}" },
+            { "name": "404 Not Found", "status": "Not Found", "code": 404, "body": "{\"success\":false,\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"Submission not found\"}}" }
+          ]
+        },
+        {
+          "name": "GET /api/submissions/me/trending-reviewed",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/submissions/me/trending-reviewed", "host": ["{{baseUrl}}"], "path": ["api", "submissions", "me", "trending-reviewed"] }
+          },
+          "response": [
+            { "name": "200 OK", "status": "OK", "code": 200, "body": "{\"success\":true,\"data\":[{\"id\":1,\"title\":\"React Dashboard for Analytics\",\"createdAt\":\"2026-08-13T17:29:00.331Z\",\"reviewCount\":4}]}" },
+            { "name": "401 Unauthorized", "status": "Unauthorized", "code": 401, "body": "{\"success\":false,\"error\":{\"code\":\"UNAUTHORIZED\",\"message\":\"Authentication required\"}}" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "POST /api/submissions/:id/reviews",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/submissions/1/reviews", "host": ["{{baseUrl}}"], "path": ["api", "submissions", "1", "reviews"] },
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"feedback\": \"Solid dashboard, the chart performance held up well in my testing too.\",\n  \"ratings\": [\n    { \"criterionId\": 1, \"rating\": 4 },\n    { \"criterionId\": 2, \"rating\": 3 }\n  ]\n}" }
+          },
+          "response": [
+            { "name": "201 Created", "status": "Created", "code": 201, "body": "{\"success\":true,\"data\":{\"id\":17,\"feedback\":\"Solid dashboard, the chart performance held up well in my testing too.\",\"createdAt\":\"2026-08-16T15:35:01.066Z\",\"submissionId\":1,\"reviewerId\":7,\"ratings\":[{\"criterionId\":1,\"rating\":4},{\"criterionId\":2,\"rating\":3}],\"reviewerKarma\":2}}" },
+            { "name": "401 Unauthorized", "status": "Unauthorized", "code": 401, "body": "{\"success\":false,\"error\":{\"code\":\"UNAUTHORIZED\",\"message\":\"Authentication required\"}}" },
+            { "name": "403 Forbidden (self-review)", "status": "Forbidden", "code": 403, "body": "{\"success\":false,\"error\":{\"code\":\"FORBIDDEN\",\"message\":\"You cannot review your own submission\"}}" },
+            { "name": "404 Not Found", "status": "Not Found", "code": 404, "body": "{\"success\":false,\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"Submission not found\"}}" },
+            { "name": "400 Criteria Mismatch", "status": "Bad Request", "code": 400, "body": "{\"success\":false,\"error\":{\"code\":\"CRITERIA_MISMATCH\",\"message\":\"Rated criterion does not belong to this submission\"}}" },
+            { "name": "409 Conflict (duplicate review)", "status": "Conflict", "code": 409, "body": "{\"success\":false,\"error\":{\"code\":\"CONFLICT\",\"message\":\"You have already reviewed this submission\"}}" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Feed",
+      "description": "Feed routes. Populated by Member C (C-05, C-06).",
+      "item": []
+    }
+  ]
+}
