@@ -226,6 +226,24 @@ export default function SubmissionDetailPage() {
                       })}
                     </div>
                     <p className="whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">{r.feedback}</p>
+
+                    <div className="mt-1 grid gap-2 sm:grid-cols-2">
+                      <div>
+                        <h3 className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Strengths</h3>
+                        <p className="mt-0.5 whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">{r.strengths}</p>
+                      </div>
+                      <div>
+                        <h3 className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Improvements</h3>
+                        <p className="mt-0.5 whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">{r.improvements}</p>
+                      </div>
+                    </div>
+
+                    {r.resources && (
+                      <div>
+                        <h3 className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Resources</h3>
+                        <p className="mt-0.5 whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">{r.resources}</p>
+                      </div>
+                    )}
                   </div>
                 </li>
               ))}
